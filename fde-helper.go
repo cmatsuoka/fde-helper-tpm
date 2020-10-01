@@ -155,7 +155,7 @@ type unlockParams struct {
 
 // unlock unseals the key and unlock the encrypted volume.
 func unlock(p []byte) error {
-	var params unlockParams
+	var params fdehelper.UnlockParams
 	if err := json.Unmarshal(p, &params); err != nil {
 		return err
 	}
