@@ -147,12 +147,6 @@ func update(p []byte) error {
 	return sb.UpdateKeyPCRProtectionPolicy(tpm, sealedKeyFile, authKey, pcrProfile)
 }
 
-type unlockParams struct {
-	VolumeName       string `json:"volume-name"`
-	SourceDevicePath string `json:"source-device-path"`
-	LockKeysOnFinish bool   `json:"lock-keys-on-finish"`
-}
-
 // unlock unseals the key and unlock the encrypted volume.
 func unlock(p []byte) error {
 	var params fdehelper.UnlockParams
@@ -173,10 +167,10 @@ func unlock(p []byte) error {
 	}
 	defer tpm.Close()
 
-	options := &sb.ActivateWithTPMSealedKeyOptions{
-		PINTries:            1,
-		RecoveryKeyTries:    3,
-		LockSealedKeyAccess: params.LockKeysOnFinish,
+	options := &sb.ActivateVolumeOptions{
+		PassphraseTries:  1,
+		RecoveryKeyTries: 3,
+		LockSealedKeys:   params.LockKeysOnFinish,
 	}
 	ok, err := sb.ActivateVolumeWithTPMSealedKey(tpm, params.VolumeName, params.SourceDevicePath, sealedKeyFile, nil, options)
 	if err != nil {
